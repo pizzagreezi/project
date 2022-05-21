@@ -1,0 +1,36 @@
+name: Node.js CI
+
+on:
+push:
+    branches: [ main ]
+
+jobs:
+build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+    matrix:
+        node-version: [12.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+    uses: actions/setup-node@v1
+    with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: install dependencies
+    run: npm ci
+
+    - name : build production
+    run: npm run build
+
+    - name: Deploy 🚀
+    uses: JamesIves/github-pages-deploy-action@3.7.1
+    with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: public # The folder the action should deploy.
+        CLEAN: true # Automatically remove deleted files from the deploy
